@@ -4,11 +4,16 @@ using System.Text;
 
 namespace TestCompany.CarRental.Domain.Enums
 {
-    public enum CarType
+    public enum Brand
     {
         Undefined,
-        Convertible,
-        MiniVan,
-        SUV
+        Tesla,
+        Renault,
+        Ferrari,
+        Audi,
+        Volskwagen,
+        Hyundai,
+        Fiat,
+        Ford
     }
 }

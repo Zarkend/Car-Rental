@@ -13,6 +13,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using TestCompany.CarRental.Domain.InfrastructureContracts;
+using TestCompany.CarRental.Domain.ServiceContracts;
+using TestCompany.CarRental.Domain.ServiceImplementations;
+using TestCompany.CarRental.Infrastructure.Repositories;
 
 namespace TestCompany.CarRental
 {
@@ -43,6 +47,9 @@ namespace TestCompany.CarRental
                 c.IncludeXmlComments(xmlPath);
             });
 
+            services.AddScoped<IRentalService, RentalService>();
+            services.AddScoped<ICarRepository, CarRepository>();
+            services.AddTransient<ICompanyRepository, CompanyRepository>();
 
         }
 

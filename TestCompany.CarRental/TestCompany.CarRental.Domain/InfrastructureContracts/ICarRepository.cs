@@ -7,8 +7,10 @@ namespace TestCompany.CarRental.Domain.InfrastructureContracts
 {
     public interface ICarRepository
     {
+        IEnumerable<Car> GetCars();
         Car GetCar(int Id);
         void UpdateCar(Car car);
-        CarRates GetCarRates(Car car);
+        CarConfig GetCarConfig(Car car);
+        int GetCarPricePerDay(Car car);
     }
 }
