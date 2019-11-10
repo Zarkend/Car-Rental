@@ -28,12 +28,10 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
             return _carRepository.GetCars();
         }
 
-        public void RentCar(Car car, Company company)
+        public void RentCar(Car car)
         {
             car.Rented = true;
             car.RentedDate = DateTime.Now;
-            car.RentedCompany = company;
-
             _carRepository.UpdateCar(car);
         }
         public void ReturnCar(Car car)
@@ -67,9 +65,12 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
                 result = "Not Enought Cars";
 
             List<Car> carsToRent = cars.Take(request.Amount).ToList();
-            Company company = _companyRepository.GetCompanies().FirstOrDefault(x => x.Id == request.CompanyId);
 
-            carsToRent.ForEach(x => RentCar(x, company));
+           
+            carsToRent.ForEach(x => {
+                x.CompanyId = request.CompanyId;
+                RentCar(x);
+                });
 
             result = "Rented successfully!";
 

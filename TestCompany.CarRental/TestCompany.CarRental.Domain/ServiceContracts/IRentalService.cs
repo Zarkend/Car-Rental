@@ -9,7 +9,7 @@ namespace TestCompany.CarRental.Domain.ServiceContracts
     public interface IRentalService
     {
         IEnumerable<Car> GetCars();
-        void RentCar(Car car, Company company);
+        void RentCar(Car car);
         void ReturnCar(Car car);
         int CalculatePrice(Car car, int days);
         string ProcessRentalRequest(RentalRequest request);

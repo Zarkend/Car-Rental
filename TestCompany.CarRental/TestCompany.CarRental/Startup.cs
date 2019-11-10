@@ -47,9 +47,9 @@ namespace TestCompany.CarRental
                 c.IncludeXmlComments(xmlPath);
             });
 
-            services.AddScoped<IRentalService, RentalService>();
-            services.AddScoped<ICarRepository, CarRepository>();
-            services.AddTransient<ICompanyRepository, CompanyRepository>();
+            services.AddTransient<IRentalService, RentalService>();
+            services.AddSingleton<ICarRepository, CarRepository>();
+            services.AddSingleton<ICompanyRepository, CompanyRepository>();
 
         }
 

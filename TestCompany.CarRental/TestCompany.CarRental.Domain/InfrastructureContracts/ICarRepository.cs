@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using TestCompany.CarRental.Domain.Entities;
 
@@ -7,7 +8,7 @@ namespace TestCompany.CarRental.Domain.InfrastructureContracts
 {
     public interface ICarRepository
     {
-        IEnumerable<Car> GetCars();
+        IQueryable<Car> GetCars();
         Car GetCar(int Id);
         void UpdateCar(Car car);
         CarConfig GetCarConfig(Car car);

@@ -2,20 +2,27 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using TestCompany.CarRental.Domain.Entities;
 using TestCompany.CarRental.Domain.Enums;
 using TestCompany.CarRental.Domain.InfrastructureContracts;
+using TestCompany.CarRental.Infrastructure.DbContexts;
 
 namespace TestCompany.CarRental.Infrastructure.Repositories
 {
-    public class CarRepository : ICarRepository
+    public class CarRepository : IRepository<Car>
     {
         private List<Car> _fleet = new List<Car>();
         private Dictionary<PriceType,int> _carPrices = new Dictionary<PriceType,int>();
+        private CarRentalContext _context;
 
         public CarRepository()
         {
+            _context = new CarRentalContext();
+
+            GetCar(67);
 
             _fleet.Add(new Car() { Registration = "ESP-1234", Brand = Brand.Tesla, Model = "model 3", Type = CarType.Convertible });
             _fleet.Add(new Car() { Registration = "ASD-1234", Brand = Brand.Renault, Model = "Megane Sport", Type = CarType.Convertible });
@@ -30,10 +37,24 @@ namespace TestCompany.CarRental.Infrastructure.Repositories
             _carPrices.Add(PriceType.Basic, 100);
             _carPrices.Add(PriceType.Premium, 150);
 
+            DeleteAll();
+            _fleet.ForEach(InsertCar);
+
         }
+
+        public void Dispose()
+        {
+            if (_context != null)
+            {
+                _context.Dispose();
+            }
+            GC.SuppressFinalize(this);
+        }
+
         public Car GetCar(int Id)
         {
-            throw new NotImplementedException();
+            var car = GetCars().FirstOrDefault(x => x.Id == Id);
+            return car;
         }
 
         public CarConfig GetCarConfig(Car car)
@@ -41,57 +62,59 @@ namespace TestCompany.CarRental.Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Car> GetCars()
+        public IQueryable<Car> Query(Expression<Func<Car, bool>> filter)
         {
-            return _fleet;
+            return _context.Car.Where(filter);
         }
 
-        private static void InsertCar(Car car)
+
+        public static void DeleteAll()
         {
             using (SqlConnection connection = new SqlConnection(@"Server=ANTONIO-PC\SQLEXPRESS;Database=CarRental;User Id=CarRental;Password=1234;"))
             {
-                connection.Open();
-
-                SqlCommand command = connection.CreateCommand();
-                SqlTransaction transaction;
-
-                transaction = connection.BeginTransaction();
-
-                command.Connection = connection;
-                command.Transaction = transaction;
-
-                try
+                using (SqlCommand command = new SqlCommand($"DELETE FROM Car", connection))
                 {
-                    command.CommandText =
-                        "Insert into Region (RegionID, RegionDescription) VALUES (100, 'Description')";
-                    command.ExecuteNonQuery();
-                    command.CommandText =
-                        "Insert into Region (RegionID, RegionDescription) VALUES (101, 'Description')";
-                    command.ExecuteNonQuery();
-
-                    // Attempt to commit the transaction.
-                    transaction.Commit();
-                    Console.WriteLine("Both records are written to database.");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Commit Exception Type: {0}", ex.GetType());
-                    Console.WriteLine("  Message: {0}", ex.Message);
-
-                    // Attempt to roll back the transaction.
                     try
                     {
-                        transaction.Rollback();
+                        command.Connection.Open();
+                        command.ExecuteNonQuery();
                     }
-                    catch (Exception ex2)
+                    catch (Exception ex)
                     {
-                        // This catch block will handle any errors that may have occurred
-                        // on the server that would cause the rollback to fail, such as
-                        // a closed connection.
-                        Console.WriteLine("Rollback Exception Type: {0}", ex2.GetType());
-                        Console.WriteLine("  Message: {0}", ex2.Message);
+                        Console.WriteLine("  Message: {0}", ex.Message);
                     }
                 }
+
+            }
+        }
+
+        public static void InsertCar(Car car)
+        {
+            using (SqlConnection connection = new SqlConnection(@"Server=ANTONIO-PC\SQLEXPRESS;Database=CarRental;User Id=CarRental;Password=1234;"))
+            {
+                using (SqlCommand command = new SqlCommand($"INSERT INTO  Car VALUES(@{nameof(car.Model)},@{nameof(car.Registration)},@{nameof(car.Brand)},@{nameof(car.Type)},@{nameof(car.Rented)},@{nameof(car.RentedDate)},@{nameof(car.CompanyId)},@{nameof(car.CreatedDate)})", connection))
+                {
+                    command.Parameters.Add(nameof(car.Model), SqlDbType.NVarChar).Value = car.Model;
+                    command.Parameters.Add(nameof(car.Registration), SqlDbType.NVarChar).Value = car.Registration;
+                    command.Parameters.Add(nameof(car.Brand), SqlDbType.Int).Value = car.Brand;
+                    command.Parameters.Add(nameof(car.Type), SqlDbType.Int).Value = car.Type;
+                    command.Parameters.Add(nameof(car.Rented), SqlDbType.Int).Value = car.Rented;
+                    command.Parameters.Add(nameof(car.RentedDate), SqlDbType.DateTime).Value = car.RentedDate;
+                    command.Parameters.Add(nameof(car.CompanyId), SqlDbType.Int).Value = car.CompanyId;
+                    car.CreatedDate = DateTime.Now;
+                    command.Parameters.Add(nameof(car.CreatedDate), SqlDbType.DateTime).Value = car.CreatedDate;
+                    
+                    try
+                    {
+                        command.Connection.Open();
+                        command.ExecuteNonQuery();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("  Message: {0}", ex.Message);
+                    }
+                }
+                
             }
         }
 
@@ -99,15 +122,21 @@ namespace TestCompany.CarRental.Infrastructure.Repositories
         {
             using (SqlConnection connection = new SqlConnection(@"Server=ANTONIO-PC\SQLEXPRESS;Database=CarRental;User Id=CarRental;Password=1234;"))
             {
-                using (SqlCommand command = new SqlCommand($"UPDATE Cars SET Rented = @{nameof(car.Rented)}, @{nameof(car.RentedDate)}, @{nameof(car.RentedCompany)} where Id = @{nameof(car.Id)} ", connection))
+                using (SqlCommand command = new SqlCommand($"UPDATE Car SET {nameof(car.Rented)} = @{nameof(car.Rented)}, {nameof(car.RentedDate)} = @{nameof(car.RentedDate)}, {nameof(car.CompanyId)} = @{nameof(car.CompanyId)} where {nameof(car.Id)} = @{nameof(car.Id)} ", connection))
                 {
-                    command.Parameters.AddWithValue(nameof(car.Rented), car.Rented);
-                    command.Parameters.AddWithValue(nameof(car.RentedDate), car.RentedDate);
-                    command.Parameters.AddWithValue(nameof(car.RentedCompany), car.RentedCompany);
-                    command.Parameters.AddWithValue(nameof(car.Id), car.Id);
-
-                    command.Connection.Open();
-                    command.ExecuteNonQuery();
+                    command.Parameters.Add(nameof(car.Rented), SqlDbType.Int).Value = car.Rented;
+                    command.Parameters.Add(nameof(car.RentedDate), SqlDbType.DateTime).Value = car.RentedDate;
+                    command.Parameters.Add(nameof(car.CompanyId), SqlDbType.Int).Value = car.CompanyId;
+                    command.Parameters.Add(nameof(car.Id), SqlDbType.Int).Value = car.Id;
+                    try
+                    {
+                        command.Connection.Open();
+                        command.ExecuteNonQuery();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("  Message: {0}", ex.Message);
+                    }
                 }
             }
         }
@@ -117,6 +146,16 @@ namespace TestCompany.CarRental.Infrastructure.Repositories
             CarConfig carConfig = GetCarConfig(car);
 
             return _carPrices[carConfig.PriceType];
+        }
+
+        public Car GetById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Car[] GetAll()
+        {
+            throw new NotImplementedException();
         }
     }
 }
