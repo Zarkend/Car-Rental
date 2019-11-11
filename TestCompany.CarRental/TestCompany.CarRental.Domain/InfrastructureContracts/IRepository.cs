@@ -6,16 +6,20 @@ using System.Text;
 
 namespace TestCompany.CarRental.Domain.InfrastructureContracts
 {
-    public interface IRepository<T>
+    public interface IRepository<TEntity> where TEntity : class
     {
         void FillTestData();
-        T GetById(int id);
-        IEnumerable<T> GetAll();
-        IQueryable<T> Query(Expression<Func<T, bool>> filter);
-        void Insert(T item);
-        void Update(T item);
-        void Delete(int Id);
-        void Save();
+        void Delete(TEntity entityToDelete);
+        void Delete(object id);
+        IEnumerable<TEntity> Get(
+            Expression<Func<TEntity, bool>> filter = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            string includeProperties = "");
+        TEntity GetByID(object id);
+        IEnumerable<TEntity> GetWithRawSql(string query,
+            params object[] parameters);
+        void Insert(TEntity entity);
+        void Update(TEntity entityToUpdate);
 
     }
 }

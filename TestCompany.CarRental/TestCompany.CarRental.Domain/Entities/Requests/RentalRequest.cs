@@ -14,9 +14,7 @@ namespace TestCompany.CarRental.Domain.Requests
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int Id { get; set; }
-        public CarType Type { get; set; }
-        public Brand Brand { get; set; } 
-        public int Amount { get; set; }
+        public int CarId { get; set; }
         public int CompanyId { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }

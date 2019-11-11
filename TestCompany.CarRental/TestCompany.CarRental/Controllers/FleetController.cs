@@ -34,7 +34,7 @@ namespace TestCompany.CarRental.Controllers
         [HttpGet("")]
         public ActionResult<Car> Get()
         {
-            IEnumerable<Car> cars = _fleetService.GetCars();
+            IEnumerable<Car> cars = _fleetService.Get();
             return Ok(cars);
         }
 
@@ -45,7 +45,7 @@ namespace TestCompany.CarRental.Controllers
         [HttpGet("cars")]
         public ActionResult<Car> Get(string registration)
         {
-            IEnumerable<Car> cars = _fleetService.GetCars();
+            IEnumerable<Car> cars = _fleetService.Get();
 
             Car car = cars.Where(x => x.Registration  == registration).FirstOrDefault();
 
@@ -64,7 +64,7 @@ namespace TestCompany.CarRental.Controllers
         [HttpPost("cars")]
         public ActionResult<IEnumerable<Car>> PostCar(CarType carType, Brand brand, bool rented)
         {
-            IEnumerable<Car> cars = _fleetService.GetCars();
+            IEnumerable<Car> cars = _fleetService.Get();
 
 
             if (carType != CarType.Undefined)

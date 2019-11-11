@@ -41,9 +41,6 @@ namespace TestCompany.CarRental.Controllers
         [HttpPost("request")]
         public ActionResult RentCars(IEnumerable<RentRequest> rentalRequests)
         {
-            IEnumerable<Car> cars = _fleetService.GetCars();
-            List<Car> rentedCars = new List<Car>();
-
             if (!rentalRequests.Any())
             {
                 return BadRequest($"Please provide atleast one RentalRequest.");
@@ -73,6 +70,23 @@ namespace TestCompany.CarRental.Controllers
             ReturnCarResponse response = _rentalService.ReturnCars(carIds);
 
             return Ok(response);
+        }
+
+        /// <summary>
+        /// Gets a list of the available cars to rent.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("availability")]
+        public ActionResult<IEnumerable<Car>> PostCar()
+        {
+            IEnumerable<Car> cars = _fleetService.Get().Where(x => !x.Rented);
+            
+            if (!cars.Any())
+            {
+                return NotFound($"There is no cars to rent at that moment. Try again later.");
+            }
+
+            return Ok(cars);
         }
 
 

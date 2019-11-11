@@ -9,32 +9,34 @@ using TestCompany.CarRental.Domain.Enums;
 using TestCompany.CarRental.Domain.InfrastructureContracts;
 using TestCompany.CarRental.Domain.Requests;
 using TestCompany.CarRental.Domain.ServiceContracts;
+using TestCompany.CarRental.Domain.UnitOfWork;
 
 namespace TestCompany.CarRental.Domain.ServiceImplementations
 {
     public class RentalService : IRentalService
     {
-        private IRepository<Car> _carRepository;
-        private IRepository<Company> _companyRepository;
-        private IRepository<RentalRequest> _rentalRequestRepository;
         private IFleetService _fleetService;
+        private IUnitOfWork _unitOfWork;
 
-        public RentalService(IRepository<Car> carRepository, IRepository<Company> companyRepository, IRepository<RentalRequest> rentalRequestRepository, IFleetService fleetService)
+        public RentalService(IFleetService fleetService, IUnitOfWork unitOfWork)
         {
-            _carRepository = carRepository;
-            _companyRepository = companyRepository;
-            _rentalRequestRepository = rentalRequestRepository;
             _fleetService = fleetService;
+            _unitOfWork = unitOfWork;
+        }
+
+        public string ProcessRentalRequest(RentalRequest request)
+        {
+            string result = "";
+
+            Car car = _fleetService.Get(x => !x.Rented).FirstOrDefault(x=> x.Id == request.CarId);
+
+            RentCars(new List<Car>() { car }, request);
+
+
+            return result;
         }
         
-        public void RentCar(Car car, int companyId)
-        {
-            car.CompanyId = companyId;
-            car.Rented = true;
-            car.RentedDate = DateTime.Now;
-            _carRepository.Update(car);
-            _carRepository.Save();
-        }
+
         public ReturnCarResponse ReturnCars(IEnumerable<int> carIds)
         {
             ReturnCarResponse response = new ReturnCarResponse();
@@ -42,16 +44,18 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
 
             foreach (var carId in carIds)
             {
-                Car car = _carRepository.GetById(carId);
+                Car car = _unitOfWork.Cars.Get(x=> x.Id == carId).FirstOrDefault();
 
                 if(car == null)
                 {
                     ReturnCarResponseMarkAsNotFound(response,carId);
+                    _unitOfWork.Rollback();
                     return response;
                 }
 
                 if (!car.Rented) {
                     ReturnCarResponseMarkAsNotRented(response, carId);
+                    _unitOfWork.Rollback();
                     return response;
                 }
 
@@ -72,50 +76,38 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
                 car.RentedUntilDate = null;
                 car.RentedDate = null;
                 car.CompanyId = null;
-                _carRepository.Update(car);
-                _carRepository.Save();
+                _unitOfWork.Cars.Update(car);
+                
             }
+
+            _unitOfWork.Commit();
 
             return response;
         }
 
-        public string ProcessRentalRequest(RentalRequest request)
+
+        private void RentCars(List<Car> cars, RentalRequest request)
         {
-            string result = "";
-            bool rentalSucceded = false;
+            cars.ForEach(x => {
+                x.RentedUntilDate = DateTime.Now.AddDays(request.Days);
+                RentCar(x, request.CompanyId);
+            });
 
-            IEnumerable<Car> cars = _fleetService.GetCars().Where(x=> !x.Rented);
+            request.Status = RentalResponseStatus.Succeded;
+            request.StatusMessage = "Rental Succeded!";
+            _unitOfWork.RentalRequests.Insert(request);
+            _unitOfWork.Commit();
 
-            if (request.Brand != Brand.Undefined)
-                cars = cars.Where(x => x.Brand == request.Brand);
-
-            if (request.Type != CarType.Undefined)
-                cars = cars.Where(x => x.Type == request.Type);
-
-            if (cars.Count() < request.Amount)
-            {
-                result = "Not Enought Cars";
-            }
-            else
-            {
-                List<Car> carsToRent = cars.Take(request.Amount).ToList();
-
-                carsToRent.ForEach(x => {
-                    x.RentedUntilDate = DateTime.Now.AddDays(request.Days);
-                    RentCar(x, request.CompanyId);
-                    });
-
-                result = "Rented successfully!";
-                rentalSucceded = true;
-            }
-
-            request.Status = rentalSucceded ? RentalResponseStatus.Succeded : RentalResponseStatus.Failed;
-            request.StatusMessage = result;
-            _rentalRequestRepository.Insert(request);
-            _rentalRequestRepository.Save();
-
-            return result;
         }
+
+        private void RentCar(Car car, int companyId)
+        {
+            car.CompanyId = companyId;
+            car.Rented = true;
+            car.RentedDate = DateTime.Now;
+            _unitOfWork.Cars.Update(car);
+        }
+
 
         private void ReturnCarResponseMarkAsNotFound(ReturnCarResponse response, int carId)
         {

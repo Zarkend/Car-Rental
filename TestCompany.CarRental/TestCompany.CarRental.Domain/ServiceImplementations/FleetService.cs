@@ -6,24 +6,25 @@ using System.Text;
 using TestCompany.CarRental.Domain.Entities;
 using TestCompany.CarRental.Domain.InfrastructureContracts;
 using TestCompany.CarRental.Domain.ServiceContracts;
+using TestCompany.CarRental.Domain.UnitOfWork;
 
 namespace TestCompany.CarRental.Domain.ServiceImplementations
 {
     public class FleetService : IFleetService
     {
-        private readonly IRepository<Car> _carRepository;
-        public FleetService(IRepository<Car> carRepository)
+        private readonly IUnitOfWork _unitOfWork;
+        public FleetService(IUnitOfWork unitOfWork)
         {
-            _carRepository = carRepository;
+            _unitOfWork = unitOfWork;
         }
         public IEnumerable<Car> GetCars()
         {
-            return _carRepository.GetAll();
+            return _unitOfWork.Cars.Get();
         }
 
-        public IQueryable<Car> Query(Expression<Func<Car, bool>> filter)
+        public IEnumerable<Car> Get(Expression<Func<Car, bool>> filter = null)
         {
-            return _carRepository.Query(filter);
+            return _unitOfWork.Cars.Get(filter);
         }
     }
 }

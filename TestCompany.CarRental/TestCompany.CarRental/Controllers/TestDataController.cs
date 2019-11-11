@@ -9,6 +9,7 @@ using TestCompany.CarRental.Domain.Enums;
 using TestCompany.CarRental.Domain.InfrastructureContracts;
 using TestCompany.CarRental.Domain.Requests;
 using TestCompany.CarRental.Domain.ServiceContracts;
+using TestCompany.CarRental.Domain.UnitOfWork;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,14 +20,12 @@ namespace TestCompany.CarRental.Controllers
     public class TestDataController : ControllerBase
     {
         private readonly ILogger<TestDataController> _logger;
-        private readonly IRepository<Car> _carRepository;
-        private readonly IRepository<Company> _companyRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public TestDataController(ILogger<TestDataController> logger, IRepository<Car> carRepository, IRepository<Company> companyRepository)
+        public TestDataController(ILogger<TestDataController> logger, IUnitOfWork unitOfWork)
         {
             _logger = logger;
-            _carRepository = carRepository;
-            _companyRepository = companyRepository;
+            _unitOfWork = unitOfWork;
         }
 
         /// <summary>
@@ -36,8 +35,8 @@ namespace TestCompany.CarRental.Controllers
         [HttpPost("FillSampleData")]
         public ActionResult<IEnumerable<Car>> PostData()
         {
-            _carRepository.FillTestData();
-            _companyRepository.FillTestData();
+            _unitOfWork.Cars.FillTestData();
+            _unitOfWork.Companies.FillTestData();
             return Ok();
         }
 

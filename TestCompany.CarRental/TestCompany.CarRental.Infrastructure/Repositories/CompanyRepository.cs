@@ -13,61 +13,26 @@ using TestCompany.CarRental.Infrastructure.DbContexts;
 
 namespace TestCompany.CarRental.Infrastructure.Repositories
 {
-    public class CompanyRepository : IRepository<Company>
+    public class CompanyRepository : BaseRepository<Company>
     {
         private CarRentalContext _context;
 
-        public CompanyRepository(CarRentalContext context)
+        public CompanyRepository(CarRentalContext context) : base(context)
         {
             _context = context;
         }
 
-        public void Dispose()
-        {
-            if (_context != null)
-            {
-                _context.Dispose();
-            }
-            GC.SuppressFinalize(this);
-        }
-
-        public IQueryable<Company> Query(Expression<Func<Company, bool>> filter)
-        {
-            return _context.Company.Where(filter);
-        }
-
-        public Company GetById(int id)
-        {
-            return _context.Company.Find(id);
-        }
-
-        public IEnumerable<Company> GetAll()
-        {
-            return _context.Company.ToList();
-        }
-
-        public void Insert(Company company)
+        public override void Insert(Company company)
         {
             company.CreatedDate = DateTime.Now;
             company.UpdatedDate = DateTime.Now;
-            _context.Company.Add(company);
+            base.Insert(company);
         }
 
-        public void Update(Company company)
+        public override void Update(Company company)
         {
             company.UpdatedDate = DateTime.Now;
-            _context.Entry(company).State = EntityState.Modified;
-        }
-
-        public void Delete(int Id)
-        {
-            Company company = _context.Company.Find(Id);
-            _context.Company.Remove(company);
-        }
-
-        public void Save()
-        {
-            _context.SaveChanges();
+            base.Update(company);
         }
 
         public void DeleteAll()
@@ -75,7 +40,7 @@ namespace TestCompany.CarRental.Infrastructure.Repositories
             _context.Database.ExecuteSqlRaw("DELETE FROM Company");
         }
 
-        public void FillTestData()
+        public override void FillTestData()
         {
             List<Company> Companies = new List<Company>();
 

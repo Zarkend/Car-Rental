@@ -9,7 +9,6 @@ namespace TestCompany.CarRental.Domain.ServiceContracts
 {
     public interface IFleetService
     {
-        IEnumerable<Car> GetCars();
-        IQueryable<Car> Query(Expression<Func<Car, bool>> filter);
+        IEnumerable<Car> Get(Expression<Func<Car, bool>> filter = null);
     }
 }

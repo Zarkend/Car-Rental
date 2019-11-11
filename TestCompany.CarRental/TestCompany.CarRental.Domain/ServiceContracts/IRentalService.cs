@@ -11,7 +11,6 @@ namespace TestCompany.CarRental.Domain.ServiceContracts
 {
     public interface IRentalService
     {
-        void RentCar(Car car, int companyId);
         ReturnCarResponse ReturnCars(IEnumerable<int> carIds);
         string ProcessRentalRequest(RentalRequest request);
     }

@@ -19,8 +19,10 @@ using TestCompany.CarRental.Domain.InfrastructureContracts;
 using TestCompany.CarRental.Domain.Requests;
 using TestCompany.CarRental.Domain.ServiceContracts;
 using TestCompany.CarRental.Domain.ServiceImplementations;
+using TestCompany.CarRental.Domain.UnitOfWork;
 using TestCompany.CarRental.Infrastructure.DbContexts;
 using TestCompany.CarRental.Infrastructure.Repositories;
+using TestCompany.CarRental.Infrastructure.UnitOfWork;
 
 namespace TestCompany.CarRental
 {
@@ -54,10 +56,8 @@ namespace TestCompany.CarRental
             services.AddTransient<IRentalService, RentalService>();
             services.AddTransient<IFleetService, FleetService>();
 
-            services.AddTransient<CarRentalContext>();
-            services.AddTransient<IRepository<Car>, CarRepository>();
-            services.AddTransient<IRepository<Company>, CompanyRepository>();
-            services.AddTransient<IRepository<RentalRequest>, RentalRequestRepository>();
+            services.AddScoped<CarRentalContext>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
