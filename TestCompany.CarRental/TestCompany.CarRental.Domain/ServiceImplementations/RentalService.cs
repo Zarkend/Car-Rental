@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using TestCompany.CarRental.Domain.Entities;
+using TestCompany.CarRental.Domain.Entities.Responses;
 using TestCompany.CarRental.Domain.Enums;
 using TestCompany.CarRental.Domain.InfrastructureContracts;
 using TestCompany.CarRental.Domain.Requests;
@@ -12,48 +14,77 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
 {
     public class RentalService : IRentalService
     {
-        private ICarRepository _carRepository;
-        private ICompanyRepository _companyRepository;
+        private IRepository<Car> _carRepository;
+        private IRepository<Company> _companyRepository;
+        private IRepository<RentalRequest> _rentalRequestRepository;
+        private IFleetService _fleetService;
 
-        public RentalService(ICarRepository carRepository, ICompanyRepository companyRepository)
+        public RentalService(IRepository<Car> carRepository, IRepository<Company> companyRepository, IRepository<RentalRequest> rentalRequestRepository, IFleetService fleetService)
         {
             _carRepository = carRepository;
             _companyRepository = companyRepository;
+            _rentalRequestRepository = rentalRequestRepository;
+            _fleetService = fleetService;
         }
-
-
-
-        public IEnumerable<Car> GetCars()
+        
+        public void RentCar(Car car, int companyId)
         {
-            return _carRepository.GetCars();
-        }
-
-        public void RentCar(Car car)
-        {
+            car.CompanyId = companyId;
             car.Rented = true;
             car.RentedDate = DateTime.Now;
-            _carRepository.UpdateCar(car);
+            _carRepository.Update(car);
+            _carRepository.Save();
         }
-        public void ReturnCar(Car car)
+        public ReturnCarResponse ReturnCars(IEnumerable<int> carIds)
         {
-            _carRepository.UpdateCar(car);
-        }
-        public int CalculatePrice(Car car, int days)
-        {
-            int price = 0;
+            ReturnCarResponse response = new ReturnCarResponse();
+            response.Status = ReturnCarResponseStatus.Succeded.ToString();
 
-            int carPricePerDay = _carRepository.GetCarPricePerDay(car);
+            foreach (var carId in carIds)
+            {
+                Car car = _carRepository.GetById(carId);
 
-            price = carPricePerDay * days;
+                if(car == null)
+                {
+                    ReturnCarResponseMarkAsNotFound(response,carId);
+                    return response;
+                }
 
-            return price;           
+                if (!car.Rented) {
+                    ReturnCarResponseMarkAsNotRented(response, carId);
+                    return response;
+                }
+
+                if (DateTime.Now.Date > car.RentedUntilDate.Value.Date)
+                {
+                    ReturnCarResponseAddExtraCost(response, car);
+                }
+                else
+                {
+                    response.CarResults.Add(new ReturnCarResult()
+                    {
+                        Message = $"Car with Id {carId} returned correctly.",
+                        Status = ReturnCarStatus.Succeded.ToString()
+                    });
+                }
+
+                car.Rented = false;
+                car.RentedUntilDate = null;
+                car.RentedDate = null;
+                car.CompanyId = null;
+                _carRepository.Update(car);
+                _carRepository.Save();
+            }
+
+            return response;
         }
 
         public string ProcessRentalRequest(RentalRequest request)
         {
             string result = "";
+            bool rentalSucceded = false;
 
-            IEnumerable<Car> cars = GetCars();
+            IEnumerable<Car> cars = _fleetService.GetCars().Where(x=> !x.Rented);
 
             if (request.Brand != Brand.Undefined)
                 cars = cars.Where(x => x.Brand == request.Brand);
@@ -62,19 +93,61 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
                 cars = cars.Where(x => x.Type == request.Type);
 
             if (cars.Count() < request.Amount)
+            {
                 result = "Not Enought Cars";
+            }
+            else
+            {
+                List<Car> carsToRent = cars.Take(request.Amount).ToList();
 
-            List<Car> carsToRent = cars.Take(request.Amount).ToList();
+                carsToRent.ForEach(x => {
+                    x.RentedUntilDate = DateTime.Now.AddDays(request.Days);
+                    RentCar(x, request.CompanyId);
+                    });
 
-           
-            carsToRent.ForEach(x => {
-                x.CompanyId = request.CompanyId;
-                RentCar(x);
-                });
+                result = "Rented successfully!";
+                rentalSucceded = true;
+            }
 
-            result = "Rented successfully!";
+            request.Status = rentalSucceded ? RentalResponseStatus.Succeded : RentalResponseStatus.Failed;
+            request.StatusMessage = result;
+            _rentalRequestRepository.Insert(request);
+            _rentalRequestRepository.Save();
 
             return result;
         }
+
+        private void ReturnCarResponseMarkAsNotFound(ReturnCarResponse response, int carId)
+        {
+            response.Status = ReturnCarResponseStatus.Failed.ToString();
+            response.Message = $"Something went wrong, check {nameof(response.CarResults)} for more info.";
+            response.CarResults.Add(new ReturnCarResult()
+            {
+                Message = $"Car with Id {carId} does not exist. Return request will fail.",
+                Status = ReturnCarStatus.CarNotFound.ToString()
+            });
+        }
+        private void ReturnCarResponseMarkAsNotRented(ReturnCarResponse response, int carId)
+        {
+            response.Status = ReturnCarResponseStatus.Failed.ToString();
+            response.Message = $"Something went wrong, check {nameof(response.CarResults)} for more info.";
+            response.CarResults.Add(new ReturnCarResult()
+            {
+                Message = $"Car with Id {carId} is not rented. Return request will fail.",
+                Status = ReturnCarStatus.CarIsNotRented.ToString()
+            });
+        }
+        private void ReturnCarResponseAddExtraCost(ReturnCarResponse response, Car car)
+        {
+            int extraDays = (DateTime.Now.Date - car.RentedUntilDate.Value.Date).Days;
+            int extraPrice = extraDays * car.PricePerDay;
+
+            response.CarResults.Add(new ReturnCarResult()
+            {
+                Message = $"Car with Id {car.Id} will be charged with extra price because is returned late. Extra price is {extraPrice}.",
+                Status = ReturnCarStatus.SuccededWithExtraPrice.ToString()
+            });
+        }
     }
+    
 }

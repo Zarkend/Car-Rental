@@ -19,22 +19,33 @@ namespace TestCompany.CarRental.Controllers
     {
 
         private readonly ILogger<FleetController> _logger;
-        private readonly IRentalService _rentalService;
+        private readonly IFleetService _fleetService;
 
-        public FleetController(ILogger<FleetController> logger, IRentalService rentalService)
+        public FleetController(ILogger<FleetController> logger, IFleetService fleetService)
         {
             _logger = logger;
-            _rentalService = rentalService;
+            _fleetService = fleetService;
         }
 
         /// <summary>
         /// Gets one car with the registration passed as parameter.
         /// </summary>
         /// <returns></returns>
-        [HttpGet("cars/{registration}")]
+        [HttpGet("")]
+        public ActionResult<Car> Get()
+        {
+            IEnumerable<Car> cars = _fleetService.GetCars();
+            return Ok(cars);
+        }
+
+        /// <summary>
+        /// Gets one car with the registration passed as parameter.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("cars")]
         public ActionResult<Car> Get(string registration)
         {
-            IEnumerable<Car> cars = _rentalService.GetCars();
+            IEnumerable<Car> cars = _fleetService.GetCars();
 
             Car car = cars.Where(x => x.Registration  == registration).FirstOrDefault();
 
@@ -51,13 +62,18 @@ namespace TestCompany.CarRental.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("cars")]
-        public ActionResult<IEnumerable<Car>> PostCar(CarType carType)
+        public ActionResult<IEnumerable<Car>> PostCar(CarType carType, Brand brand, bool rented)
         {
-            IEnumerable<Car> cars = _rentalService.GetCars();
+            IEnumerable<Car> cars = _fleetService.GetCars();
 
 
             if (carType != CarType.Undefined)
                 cars = cars.Where(x => x.Type == carType);
+
+            if (brand != Brand.Undefined)
+                cars = cars.Where(x => x.Brand == brand);
+
+            cars = cars.Where(x => x.Rented == rented);
 
             if (!cars.Any())
             {

@@ -18,5 +18,10 @@ namespace TestCompany.CarRental.Domain.Requests
         public Brand Brand { get; set; } 
         public int Amount { get; set; }
         public int CompanyId { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime UpdatedDate { get; set; }
+        public RentalResponseStatus Status { get; set; }
+        public string StatusMessage { get; set; }
+        public int Days { get; set; }
     }
 }

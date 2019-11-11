@@ -13,5 +13,7 @@ namespace TestCompany.CarRental.Domain.Entities
         public int Id { get; set; }
         public string Name { get; set; }
         public int BonusPoints { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime UpdatedDate { get; set; }
     }
 }

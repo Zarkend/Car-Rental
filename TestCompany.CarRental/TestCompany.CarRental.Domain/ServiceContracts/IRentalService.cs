@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using TestCompany.CarRental.Domain.Entities;
+using TestCompany.CarRental.Domain.Entities.Responses;
 using TestCompany.CarRental.Domain.Requests;
 
 namespace TestCompany.CarRental.Domain.ServiceContracts
 {
     public interface IRentalService
     {
-        IEnumerable<Car> GetCars();
-        void RentCar(Car car);
-        void ReturnCar(Car car);
-        int CalculatePrice(Car car, int days);
+        void RentCar(Car car, int companyId);
+        ReturnCarResponse ReturnCars(IEnumerable<int> carIds);
         string ProcessRentalRequest(RentalRequest request);
     }
 }

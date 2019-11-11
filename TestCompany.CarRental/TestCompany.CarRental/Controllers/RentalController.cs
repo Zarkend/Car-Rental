@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using TestCompany.CarRental.Domain.Entities;
+using TestCompany.CarRental.Domain.Entities.Responses;
 using TestCompany.CarRental.Domain.Enums;
 using TestCompany.CarRental.Domain.Requests;
 using TestCompany.CarRental.Domain.ServiceContracts;
+using TestCompany.CarRental.WebAPI.ApiRequests;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,36 +23,57 @@ namespace TestCompany.CarRental.Controllers
 
         private readonly ILogger<FleetController> _logger;
         private readonly IRentalService _rentalService;
+        private readonly IFleetService _fleetService;
+        private readonly IMapper _mapper;
 
-        public RentalController(ILogger<FleetController> logger, IRentalService rentalService)
+        public RentalController(ILogger<FleetController> logger, IRentalService rentalService, IMapper mapper, IFleetService fleetService)
         {
             _logger = logger;
             _rentalService = rentalService;
+            _mapper = mapper;
+            _fleetService = fleetService;
         }
 
         /// <summary>
-        /// Try to rent cars of type. If available return Okey.
+        /// Process rental requests.
         /// </summary>
         /// <returns></returns>
-        [HttpPost("rent")]
-        public ActionResult RentCars(IEnumerable<RentalRequest> rentalRequests)
+        [HttpPost("request")]
+        public ActionResult RentCars(IEnumerable<RentRequest> rentalRequests)
         {
-            IEnumerable<Car> cars = _rentalService.GetCars();
+            IEnumerable<Car> cars = _fleetService.GetCars();
             List<Car> rentedCars = new List<Car>();
 
             if (!rentalRequests.Any())
             {
-                return NotFound($"Please provide atleast one RentalRequest.");
+                return BadRequest($"Please provide atleast one RentalRequest.");
             }
 
-            foreach(RentalRequest request in rentalRequests)
+            foreach(RentRequest request in rentalRequests)
             {
-                _rentalService.ProcessRentalRequest(request);
-            }
-            
+                _rentalService.ProcessRentalRequest(_mapper.Map<RentalRequest>(request));
+            }            
 
-            return Ok(cars);
-        }       
+            return Ok("Rented Successfuly");
+        }
+
+        /// <summary>
+        /// Try to return a list of Cars.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("return")]
+        public ActionResult ReturnCars(IEnumerable<int> carIds)
+        {
+
+            if (!carIds.Any())
+            {
+                return BadRequest($"Please provide atleast one car to return.");
+            }
+
+            ReturnCarResponse response = _rentalService.ReturnCars(carIds);
+
+            return Ok(response);
+        }
 
 
 

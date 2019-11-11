@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -13,9 +14,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using TestCompany.CarRental.Domain.Entities;
 using TestCompany.CarRental.Domain.InfrastructureContracts;
+using TestCompany.CarRental.Domain.Requests;
 using TestCompany.CarRental.Domain.ServiceContracts;
 using TestCompany.CarRental.Domain.ServiceImplementations;
+using TestCompany.CarRental.Infrastructure.DbContexts;
 using TestCompany.CarRental.Infrastructure.Repositories;
 
 namespace TestCompany.CarRental
@@ -48,8 +52,14 @@ namespace TestCompany.CarRental
             });
 
             services.AddTransient<IRentalService, RentalService>();
-            services.AddSingleton<ICarRepository, CarRepository>();
-            services.AddSingleton<ICompanyRepository, CompanyRepository>();
+            services.AddTransient<IFleetService, FleetService>();
+
+            services.AddTransient<CarRentalContext>();
+            services.AddTransient<IRepository<Car>, CarRepository>();
+            services.AddTransient<IRepository<Company>, CompanyRepository>();
+            services.AddTransient<IRepository<RentalRequest>, RentalRequestRepository>();
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
         }
 
