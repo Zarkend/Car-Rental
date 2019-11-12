@@ -9,17 +9,19 @@ using TestCompany.CarRental.Domain.Enums;
 
 namespace TestCompany.CarRental.Domain.Requests
 {
-    public class RentalRequest
+    public class RentRequest
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int Id { get; set; }
-        public int CarId { get; set; }
-        public int CompanyId { get; set; }
+        [NotMapped]
+        public List<int> CarIds { get; set; }
+        public int? CompanyId { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
-        public RentalResponseStatus Status { get; set; }
+        public RentCarResponseStatus Status { get; set; }
         public string StatusMessage { get; set; }
         public int Days { get; set; }
+        public Company Company { get; set; }
     }
 }

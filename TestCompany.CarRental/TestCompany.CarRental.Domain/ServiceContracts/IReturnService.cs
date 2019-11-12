@@ -9,8 +9,8 @@ using TestCompany.CarRental.Domain.Requests;
 
 namespace TestCompany.CarRental.Domain.ServiceContracts
 {
-    public interface IRentalService
+    public interface IReturnService
     {
-        RentCarResponse ProcessRentalRequest(RentRequest request);
+        ReturnCarResponse ReturnCars(IEnumerable<int> carIds);
     }
 }

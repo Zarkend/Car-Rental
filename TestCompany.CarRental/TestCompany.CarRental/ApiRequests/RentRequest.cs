@@ -8,7 +8,7 @@ namespace TestCompany.CarRental.WebAPI.ApiRequests
 {
     public class RentRequest
     {
-        public int CarId { get; set; }
+        public List<int> CarIds { get; set; }
         public int CompanyId { get; set; }
         public int Days { get; set; }
 

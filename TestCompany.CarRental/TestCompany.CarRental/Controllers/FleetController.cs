@@ -14,7 +14,7 @@ using TestCompany.CarRental.Domain.ServiceContracts;
 namespace TestCompany.CarRental.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/v1/[controller]")]
     public class FleetController : ControllerBase
     {
 
@@ -27,57 +27,47 @@ namespace TestCompany.CarRental.Controllers
             _fleetService = fleetService;
         }
 
-        /// <summary>
-        /// Gets one car with the registration passed as parameter.
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("")]
-        public ActionResult<Car> Get()
-        {
-            IEnumerable<Car> cars = _fleetService.Get();
-            return Ok(cars);
-        }
-
-        /// <summary>
-        /// Gets one car with the registration passed as parameter.
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("cars")]
-        public ActionResult<Car> Get(string registration)
+        [HttpGet("{carId}")]
+        public ActionResult<Car> Get(int carId)
         {
             IEnumerable<Car> cars = _fleetService.Get();
 
-            Car car = cars.Where(x => x.Registration  == registration).FirstOrDefault();
+            Car car = cars.FirstOrDefault(x => x.Id == carId);
 
             if(car == null)
             {
-                return NotFound($"There is no car with registration {registration}. Please try with another registration");
+                return NotFound($"There is no car with Id {carId}. Please try with another carId");
             }
 
             return Ok(car);
         }
 
         /// <summary>
-        /// Gets one car with the registration passed as parameter.
+        /// Get cars matching the parameters provided.
         /// </summary>
         /// <returns></returns>
-        [HttpPost("cars")]
-        public ActionResult<IEnumerable<Car>> PostCar(CarType carType, Brand brand, bool rented)
+        [HttpGet]
+        public ActionResult<IEnumerable<Car>> GetCar(int? id, string? registration, CarType carType, Brand brand, bool? rented)
         {
             IEnumerable<Car> cars = _fleetService.Get();
 
+            if (id.HasValue)
+                cars = cars.Where(x => x.Id == id);
 
+            if (!string.IsNullOrEmpty(registration))
+                cars = cars.Where(x => x.Registration == registration);
+            
             if (carType != CarType.Undefined)
                 cars = cars.Where(x => x.Type == carType);
 
             if (brand != Brand.Undefined)
                 cars = cars.Where(x => x.Brand == brand);
-
-            cars = cars.Where(x => x.Rented == rented);
+            if(rented.HasValue)
+                cars = cars.Where(x => x.Rented == rented);
 
             if (!cars.Any())
             {
-                return NotFound($"There is no cars wich matches all the parameters passed. Please try again.");
+                return NotFound(new NotFoundObjectResult($"There is no cars wich matches all the parameters passed. Please try again."));
             }
 
             return Ok(cars);

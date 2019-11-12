@@ -16,7 +16,7 @@ namespace TestCompany.CarRental.Infrastructure.UnitOfWork
 
         private CarRentalContext _dbContext;
         private BaseRepository<Car> _cars;
-        private BaseRepository<RentalRequest> _rentalRequests;
+        private BaseRepository<RentRequest> _rentalRequests;
         private BaseRepository<Company> _companies;
 
         public UnitOfWork(CarRentalContext dbContext)
@@ -29,16 +29,16 @@ namespace TestCompany.CarRental.Infrastructure.UnitOfWork
             get
             {
                 return _cars ??
-                    (_cars = new BaseRepository<Car>(_dbContext));
+                    (_cars = new CarRepository(_dbContext));
             }
         }
 
-        public IRepository<RentalRequest> RentalRequests
+        public IRepository<RentRequest> RentalRequests
         {
             get
             {
                 return _rentalRequests ??
-                    (_rentalRequests = new BaseRepository<RentalRequest>(_dbContext));
+                    (_rentalRequests = new BaseRepository<RentRequest>(_dbContext));
             }
         }
 
@@ -47,7 +47,7 @@ namespace TestCompany.CarRental.Infrastructure.UnitOfWork
             get
             {
                 return _companies ??
-                    (_companies = new BaseRepository<Company>(_dbContext));
+                    (_companies = new CompanyRepository(_dbContext));
             }
         }
 

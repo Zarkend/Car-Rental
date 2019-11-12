@@ -12,7 +12,7 @@ namespace TestCompany.CarRental.WebAPI.Profiles
     {
         public RentalRequestProfile()
         {
-            CreateMap<RentRequest, RentalRequest>();
+            CreateMap<ApiRequests.RentRequest, Domain.Requests.RentRequest>();
         }
     }
 }

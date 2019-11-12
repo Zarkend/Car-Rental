@@ -7,6 +7,8 @@
   <ItemGroup>
     <Compile Remove="Migrations\20191110182325_AddedRentalRequestStatus.cs" />
     <Compile Remove="Migrations\20191110182325_AddedRentalRequestStatus.Designer.cs" />
+    <Compile Remove="Migrations\20191112212519_AddedForeignKeyCompanyToRentalRequestFix.cs" />
+    <Compile Remove="Migrations\20191112212519_AddedForeignKeyCompanyToRentalRequestFix.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -10,7 +10,7 @@ namespace TestCompany.CarRental.Domain.UnitOfWork
     public interface IUnitOfWork
     {
         IRepository<Car> Cars { get; }
-        IRepository<RentalRequest> RentalRequests { get; }
+        IRepository<RentRequest> RentalRequests { get; }
         IRepository<Company> Companies { get; }
         void Commit();
         void Rollback();

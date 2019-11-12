@@ -55,6 +55,7 @@ namespace TestCompany.CarRental
 
             services.AddTransient<IRentalService, RentalService>();
             services.AddTransient<IFleetService, FleetService>();
+            services.AddTransient<IReturnService, ReturnService>();
 
             services.AddScoped<CarRentalContext>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();

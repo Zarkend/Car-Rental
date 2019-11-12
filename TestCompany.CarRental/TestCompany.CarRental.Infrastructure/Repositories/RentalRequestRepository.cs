@@ -14,7 +14,7 @@ using TestCompany.CarRental.Infrastructure.DbContexts;
 
 namespace TestCompany.CarRental.Infrastructure.Repositories
 {
-    public class RentalRequestRepository : BaseRepository<RentalRequest>
+    public class RentalRequestRepository : BaseRepository<RentRequest>
     {
         private CarRentalContext _context;
 
@@ -24,14 +24,14 @@ namespace TestCompany.CarRental.Infrastructure.Repositories
         }
 
        
-        public override void Insert(RentalRequest request)
+        public override void Insert(RentRequest request)
         {
             request.CreatedDate = DateTime.Now;
             request.UpdatedDate = DateTime.Now;
             base.Insert(request);
         }
 
-        public override void Update(RentalRequest request)
+        public override void Update(RentRequest request)
         {
             request.UpdatedDate = DateTime.Now;
             base.Update(request);

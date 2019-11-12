@@ -44,12 +44,12 @@ namespace TestCompany.CarRental.Infrastructure.Repositories
         {
             List<Company> Companies = new List<Company>();
 
-            Companies.Add(new Company() { Name = "Vueling Airlines" });
-            Companies.Add(new Company() { Name = "Blizzard" });
-            Companies.Add(new Company() { Name = "Riot Games" });
-            Companies.Add(new Company() { Name = "King" });
-            Companies.Add(new Company() { Name = "ToySRUs" });
-            Companies.Add(new Company() { Name = "Decathlon" });
+            Companies.Add(new Company() { Name = "Vueling Airlines", CreatedDate = DateTime.Now, UpdatedDate = DateTime.Now });
+            Companies.Add(new Company() { Name = "Blizzard", CreatedDate = DateTime.Now, UpdatedDate = DateTime.Now });
+            Companies.Add(new Company() { Name = "Riot Games", CreatedDate = DateTime.Now, UpdatedDate = DateTime.Now });
+            Companies.Add(new Company() { Name = "King", CreatedDate = DateTime.Now, UpdatedDate = DateTime.Now });
+            Companies.Add(new Company() { Name = "ToySRUs", CreatedDate = DateTime.Now, UpdatedDate = DateTime.Now });
+            Companies.Add(new Company() { Name = "Decathlon", CreatedDate = DateTime.Now, UpdatedDate = DateTime.Now });
 
             DeleteAll();
 

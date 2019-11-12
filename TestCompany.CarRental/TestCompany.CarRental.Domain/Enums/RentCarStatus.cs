@@ -4,9 +4,8 @@ using System.Text;
 
 namespace TestCompany.CarRental.Domain.Enums
 {
-    public enum RentalResponseStatus
+    public enum RentCarStatus
     {
-        Succeded,
-        Failed
+        Succeded
     }
 }
