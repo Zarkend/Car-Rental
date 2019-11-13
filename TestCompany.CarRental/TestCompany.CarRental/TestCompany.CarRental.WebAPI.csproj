@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\TestCompany.CarRental.Domain\TestCompany.CarRental.Domain.csproj" />
     <ProjectReference Include="..\TestCompany.CarRental.Infrastructure\TestCompany.CarRental.Infrastructure.csproj" />
+    <ProjectReference Include="..\TestCompany.CarRental.WebAPI.Contracts\TestCompany.CarRental.WebAPI.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading.Tasks;
 using TestCompany.CarRental.Domain.Entities;
 using TestCompany.CarRental.Domain.Enums;
 using TestCompany.CarRental.Domain.InfrastructureContracts;
@@ -22,11 +23,11 @@ namespace TestCompany.CarRental.Infrastructure.Repositories
             _context = context;
         }
 
-        public override void Insert(Company company)
+        public async override Task InsertAsync(Company company)
         {
             company.CreatedDate = DateTime.Now;
             company.UpdatedDate = DateTime.Now;
-            base.Insert(company);
+            await base.InsertAsync(company);
         }
 
         public override void Update(Company company)
@@ -40,7 +41,7 @@ namespace TestCompany.CarRental.Infrastructure.Repositories
             _context.Database.ExecuteSqlRaw("DELETE FROM Company");
         }
 
-        public override void FillTestData()
+        public async override Task FillTestDataAsync()
         {
             List<Company> Companies = new List<Company>();
 
@@ -53,7 +54,7 @@ namespace TestCompany.CarRental.Infrastructure.Repositories
 
             DeleteAll();
 
-            Companies.ForEach(Insert);
+            Companies.ForEach(async x=> await InsertAsync(x));
 
             _context.SaveChanges();
         }

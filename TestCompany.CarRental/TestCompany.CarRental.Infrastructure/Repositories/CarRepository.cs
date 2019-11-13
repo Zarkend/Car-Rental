@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading.Tasks;
 using TestCompany.CarRental.Domain.Entities;
 using TestCompany.CarRental.Domain.Enums;
 using TestCompany.CarRental.Domain.InfrastructureContracts;
@@ -29,14 +30,14 @@ namespace TestCompany.CarRental.Infrastructure.Repositories
       
 
         
-        public override void Insert(Car car)
+        public async override Task InsertAsync(Car car)
         {
             car.PriceType = car.Type == CarType.Convertible ? PriceType.Premium : PriceType.Basic;
             car.BonusPointsPerRental = car.Type == CarType.Convertible ? 2 : 1;
             car.PricePerDay = _carPrices[car.PriceType];
             car.CreatedDate = DateTime.Now;
             car.UpdatedDate = DateTime.Now;
-            base.Insert(car);
+            await base.InsertAsync(car);
         }
 
         public override void Update(Car car)
@@ -50,7 +51,7 @@ namespace TestCompany.CarRental.Infrastructure.Repositories
             _context.Database.ExecuteSqlRaw("DELETE FROM Car");
         }
 
-        public override void FillTestData()
+        public async override Task FillTestDataAsync()
         {
             _fleet.Add(new Car() { Registration = "ESP-1234", Brand = Brand.Tesla, Model = "model 3", Type = CarType.Convertible });
             _fleet.Add(new Car() { Registration = "ASD-1234", Brand = Brand.Renault, Model = "Megane Sport", Type = CarType.Convertible });
@@ -62,7 +63,7 @@ namespace TestCompany.CarRental.Infrastructure.Repositories
             _fleet.Add(new Car() { Registration = "FEW-1234", Brand = Brand.Audi, Model = "A4 Sport", Type = CarType.Convertible });
             _fleet.Add(new Car() { Registration = "FES-1234", Brand = Brand.Audi, Model = "A4", Type = CarType.SUV });
             DeleteAll();
-            _fleet.ForEach(Insert);
+            _fleet.ForEach(async x => await InsertAsync(x));
             _context.SaveChanges();
         }
     }

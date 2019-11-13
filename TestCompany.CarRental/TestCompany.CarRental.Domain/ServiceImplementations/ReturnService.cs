@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading.Tasks;
 using TestCompany.CarRental.Domain.Entities;
 using TestCompany.CarRental.Domain.Entities.Responses;
 using TestCompany.CarRental.Domain.Enums;
@@ -24,10 +25,10 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
             _unitOfWork = unitOfWork;
         }                      
 
-        public ReturnCarResponse ReturnCars(IEnumerable<int> carIds)
+        public async Task<ReturnCarResponse> ReturnCarsAsync(IEnumerable<int> carIds)
         {
             ReturnCarResponse response = new ReturnCarResponse();
-            List<Car> cars = _unitOfWork.Cars.Get(x => carIds.Contains(x.Id)).ToList();
+            List<Car> cars = await _unitOfWork.Cars.GetAsync(x => carIds.Contains(x.Id));
 
             foreach (var carId in carIds)
             {

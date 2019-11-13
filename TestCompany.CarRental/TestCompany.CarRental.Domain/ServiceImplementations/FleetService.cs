@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading.Tasks;
 using TestCompany.CarRental.Domain.Entities;
 using TestCompany.CarRental.Domain.InfrastructureContracts;
 using TestCompany.CarRental.Domain.ServiceContracts;
@@ -17,14 +18,27 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
         {
             _unitOfWork = unitOfWork;
         }
-        public IEnumerable<Car> GetCars()
+        public async Task<IEnumerable<Car>> GetCarsAsync()
         {
-            return _unitOfWork.Cars.Get();
+            return await _unitOfWork.Cars.GetAsync();
         }
 
-        public IEnumerable<Car> Get(Expression<Func<Car, bool>> filter = null)
+        public async Task<IEnumerable<Car>> GetAsync(Expression<Func<Car, bool>> filter = null)
         {
-            return _unitOfWork.Cars.Get(filter);
+            return await _unitOfWork.Cars.GetAsync(filter);
+        }
+
+        public async Task<bool> UpdateCarAsync(Car carToUpdate)
+        {
+            _unitOfWork.Cars.Update(carToUpdate);
+            var updated = await _unitOfWork.CommitAsync();
+            return updated > 0;
+        }
+        public async Task<bool> DeleteCarAsync(Car carToDelete)
+        {
+            _unitOfWork.Cars.Delete(carToDelete);
+            var deleted = await _unitOfWork.CommitAsync();
+            return deleted > 0;
         }
     }
 }

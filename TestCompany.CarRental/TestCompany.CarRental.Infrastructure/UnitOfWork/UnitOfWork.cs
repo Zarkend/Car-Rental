@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using TestCompany.CarRental.Domain.Entities;
 using TestCompany.CarRental.Domain.InfrastructureContracts;
 using TestCompany.CarRental.Domain.Requests;
@@ -54,6 +55,10 @@ namespace TestCompany.CarRental.Infrastructure.UnitOfWork
         public void Commit()
         {
             _dbContext.SaveChanges();
+        }
+        public async Task<int> CommitAsync()
+        {
+            return await _dbContext.SaveChangesAsync();
         }
 
         public void Rollback()

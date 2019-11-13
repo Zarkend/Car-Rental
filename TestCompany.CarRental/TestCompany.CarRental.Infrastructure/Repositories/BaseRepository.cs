@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading.Tasks;
 using TestCompany.CarRental.Domain.InfrastructureContracts;
 using TestCompany.CarRental.Infrastructure.DbContexts;
 
@@ -26,7 +27,7 @@ namespace TestCompany.CarRental.Infrastructure.Repositories
             return dbSet.FromSqlRaw(query, parameters);
         }
 
-        public virtual IEnumerable<TEntity> Get(
+        public virtual async Task<List<TEntity>> GetAsync(
             Expression<Func<TEntity, bool>> filter = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
             string includeProperties = "")
@@ -50,27 +51,27 @@ namespace TestCompany.CarRental.Infrastructure.Repositories
 
             if (orderBy != null)
             {
-                return orderBy(query).ToList();
+                return await orderBy(query).ToListAsync();
             }
             else
             {
-                return query.ToList();
+                return await query.ToListAsync();
             }
         }
 
-        public virtual TEntity GetByID(object id)
+        public async virtual Task<TEntity> GetByIDAsync(object id)
         {
-            return dbSet.Find(id);
+            return await dbSet.FindAsync(id);
         }
 
-        public virtual void Insert(TEntity entity)
+        public async virtual Task InsertAsync(TEntity entity)
         {
-            dbSet.Add(entity);
+            await dbSet.AddAsync(entity);
         }
 
-        public virtual void Delete(object id)
+        public async virtual Task DeleteAsync(object id)
         {
-            TEntity entityToDelete = dbSet.Find(id);
+            TEntity entityToDelete = await dbSet.FindAsync(id);
             Delete(entityToDelete);
         }
 
@@ -89,7 +90,7 @@ namespace TestCompany.CarRental.Infrastructure.Repositories
             context.Entry(entityToUpdate).State = EntityState.Modified;
         }
 
-        public virtual void FillTestData()
+        public async virtual Task FillTestDataAsync()
         {
             throw new NotImplementedException();
         }

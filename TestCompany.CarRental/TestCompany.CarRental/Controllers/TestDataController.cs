@@ -33,10 +33,10 @@ namespace TestCompany.CarRental.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("FillSampleData")]
-        public ActionResult<IEnumerable<Car>> PostData()
+        public async Task<ActionResult<IEnumerable<Car>>> PostDataAsync()
         {
-            _unitOfWork.Cars.FillTestData();
-            _unitOfWork.Companies.FillTestData();
+            await _unitOfWork.Cars.FillTestDataAsync();
+            await _unitOfWork.Companies.FillTestDataAsync();
             return Ok();
         }
 

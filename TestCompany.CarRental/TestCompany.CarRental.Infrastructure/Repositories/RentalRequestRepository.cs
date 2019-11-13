@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading.Tasks;
 using TestCompany.CarRental.Domain.Entities;
 using TestCompany.CarRental.Domain.Enums;
 using TestCompany.CarRental.Domain.InfrastructureContracts;
@@ -24,11 +25,11 @@ namespace TestCompany.CarRental.Infrastructure.Repositories
         }
 
        
-        public override void Insert(RentRequest request)
+        public async override Task InsertAsync(RentRequest request)
         {
             request.CreatedDate = DateTime.Now;
             request.UpdatedDate = DateTime.Now;
-            base.Insert(request);
+            await base.InsertAsync(request);
         }
 
         public override void Update(RentRequest request)

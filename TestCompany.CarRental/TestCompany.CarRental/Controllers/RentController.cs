@@ -17,16 +17,15 @@ using TestCompany.CarRental.WebAPI.ApiRequests;
 namespace TestCompany.CarRental.Controllers
 {
     [ApiController]
-    [Route("api/v1/[controller]")]
     public class RentController : ControllerBase
     {
 
-        private readonly ILogger<FleetController> _logger;
+        private readonly ILogger<CarsController> _logger;
         private readonly IRentalService _rentalService;
         private readonly IFleetService _fleetService;
         private readonly IMapper _mapper;
 
-        public RentController(ILogger<FleetController> logger, IRentalService rentalService, IMapper mapper, IFleetService fleetService)
+        public RentController(ILogger<CarsController> logger, IRentalService rentalService, IMapper mapper, IFleetService fleetService)
         {
             _logger = logger;
             _rentalService = rentalService;
@@ -39,7 +38,7 @@ namespace TestCompany.CarRental.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("request")]
-        public ActionResult RentCars(IEnumerable<WebAPI.ApiRequests.RentRequest> rentalRequests)
+        public async Task<ActionResult> RentCarsAsync(IEnumerable<WebAPI.ApiRequests.RentRequest> rentalRequests)
         {
             List<RentCarResponse> responses = new List<RentCarResponse>();
             if (!rentalRequests.Any())
@@ -49,7 +48,7 @@ namespace TestCompany.CarRental.Controllers
 
             foreach(WebAPI.ApiRequests.RentRequest request in rentalRequests)
             {
-                RentCarResponse response = _rentalService.ProcessRentalRequest(_mapper.Map<Domain.Requests.RentRequest>(request));
+                RentCarResponse response = await _rentalService.ProcessRentalRequestAsync(_mapper.Map<Domain.Requests.RentRequest>(request));
                 responses.Add(response);
             }            
 
@@ -62,9 +61,9 @@ namespace TestCompany.CarRental.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("availableCars")]
-        public ActionResult<IEnumerable<Car>> GetAvailableCars(CarType carType, Brand brand)
+        public async Task<ActionResult<IEnumerable<Car>>> GetAvailableCarsAsync(CarType carType, Brand brand)
         {
-            IEnumerable<Car> cars = _fleetService.Get();
+            IEnumerable<Car> cars = await _fleetService.GetAsync();
 
             cars = cars.Where(x => !x.Rented);
 
@@ -87,9 +86,9 @@ namespace TestCompany.CarRental.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("availableCars/{carId}")]
-        public ActionResult<bool> GetAvailableCar(int carId)
+        public async Task<ActionResult<bool>> GetAvailableCar(int carId)
         {
-            Car car = _fleetService.Get().FirstOrDefault(x => x.Id == carId);
+            Car car = (await _fleetService.GetAsync()).FirstOrDefault(x => x.Id == carId);
 
             if (car == null)
             {
