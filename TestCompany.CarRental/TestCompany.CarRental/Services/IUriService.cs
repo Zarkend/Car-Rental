@@ -8,5 +8,6 @@ namespace TestCompany.CarRental.WebAPI.Services
     public interface IUriService
     {
         Uri GetCarUri(string carId);
+        Uri GetCompanyUri(string companyId);
     }
 }

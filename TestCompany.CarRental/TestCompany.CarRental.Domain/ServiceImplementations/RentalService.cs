@@ -16,10 +16,10 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
 {
     public class RentalService : IRentalService
     {
-        private IFleetService _fleetService;
+        private ICarService _fleetService;
         private IUnitOfWork _unitOfWork;
 
-        public RentalService(IFleetService fleetService, IUnitOfWork unitOfWork)
+        public RentalService(ICarService fleetService, IUnitOfWork unitOfWork)
         {
             _fleetService = fleetService;
             _unitOfWork = unitOfWork;

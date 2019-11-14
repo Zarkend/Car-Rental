@@ -16,10 +16,10 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
 {
     public class ReturnService : IReturnService
     {
-        private IFleetService _fleetService;
+        private ICarService _fleetService;
         private IUnitOfWork _unitOfWork;
 
-        public ReturnService(IFleetService fleetService, IUnitOfWork unitOfWork)
+        public ReturnService(ICarService fleetService, IUnitOfWork unitOfWork)
         {
             _fleetService = fleetService;
             _unitOfWork = unitOfWork;

@@ -23,11 +23,11 @@ namespace TestCompany.CarRental.Controllers
     public class CarsController : ControllerBase
     {
         private readonly ILogger<CarsController> _logger;
-        private readonly IFleetService _fleetService;
+        private readonly ICarService _fleetService;
         private readonly IMapper _mapper;
         private readonly IUriService _uriService;
 
-        public CarsController(ILogger<CarsController> logger, IFleetService fleetService, IMapper mapper, IUriService uriService)
+        public CarsController(ILogger<CarsController> logger, ICarService fleetService, IMapper mapper, IUriService uriService)
         {
             _logger = logger;
             _fleetService = fleetService;
@@ -62,7 +62,7 @@ namespace TestCompany.CarRental.Controllers
             if(string.IsNullOrEmpty(request.Registration) || request.Registration.Length != 10)
                 return BadRequest(new BadRequestObjectResult($"Registration must have 10 characters."));
 
-            Car createdCar = await _fleetService.CreateCarAsync(_mapper.Map<Car>(request));
+            Car createdCar = await _fleetService.CreateAsync(_mapper.Map<Car>(request));
 
             if (createdCar == null)
                 return NotFound(new NotFoundObjectResult($"Car was not created."));
@@ -87,7 +87,7 @@ namespace TestCompany.CarRental.Controllers
             car.BonusPointsPerRental = request.BonusPointsPerRental;
             car.PricePerDay = request.PricePerDay;
 
-            var updated = await _fleetService.UpdateCarAsync(car);
+            var updated = await _fleetService.UpdateAsync(car);
 
             if (!updated)
                 return NotFound(new NotFoundObjectResult($"Car was not updated."));
@@ -105,7 +105,7 @@ namespace TestCompany.CarRental.Controllers
                 return NotFound(new NotFoundObjectResult($"There is no car with Id {carId}. Please try with another carId"));
             }
 
-            var deleted = await _fleetService.DeleteCarAsync(car);
+            var deleted = await _fleetService.DeleteAsync(car);
 
             if (!deleted)
                 return NotFound(new NotFoundObjectResult($"Car was not deleted."));

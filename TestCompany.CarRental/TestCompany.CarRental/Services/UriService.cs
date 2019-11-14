@@ -18,6 +18,10 @@ namespace TestCompany.CarRental.WebAPI.Services
         public Uri GetCarUri(string carId)
         {
             return new Uri(_baseUri + ApiRoutes.Cars.Get.Replace("{carId}", carId));
-        }        
+        }
+        public Uri GetCompanyUri(string companyId)
+        {
+            return new Uri(_baseUri + ApiRoutes.Companies.Get.Replace("{companyId}", companyId));
+        }
     }
 }

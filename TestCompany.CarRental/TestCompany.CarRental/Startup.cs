@@ -26,6 +26,7 @@ using TestCompany.CarRental.Infrastructure.DbContexts;
 using TestCompany.CarRental.Infrastructure.Repositories;
 using TestCompany.CarRental.Infrastructure.UnitOfWork;
 using TestCompany.CarRental.WebAPI.Services;
+using TestCompany.CompanyRental.Domain.ServiceImplementations;
 
 namespace TestCompany.CarRental
 {
@@ -57,7 +58,8 @@ namespace TestCompany.CarRental
             });
 
             services.AddTransient<IRentalService, RentalService>();
-            services.AddTransient<IFleetService, FleetService>();
+            services.AddTransient<ICarService, CarService>();
+            services.AddTransient<ICompanyService, CompanyService>();
             services.AddTransient<IReturnService, ReturnService>();
 
             services.AddScoped<CarRentalContext>();

@@ -11,10 +11,10 @@ using TestCompany.CarRental.Domain.UnitOfWork;
 
 namespace TestCompany.CarRental.Domain.ServiceImplementations
 {
-    public class FleetService : IFleetService
+    public class CarService : ICarService
     {
         private readonly IUnitOfWork _unitOfWork;
-        public FleetService(IUnitOfWork unitOfWork)
+        public CarService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
@@ -27,7 +27,7 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
         {
             return await _unitOfWork.Cars.GetAsync(filter);
         }
-        public async Task<Car> CreateCarAsync(Car carToCreate)
+        public async Task<Car> CreateAsync(Car carToCreate)
         {
             await _unitOfWork.Cars.InsertAsync(carToCreate);
             var created = await _unitOfWork.CommitAsync();
@@ -38,13 +38,13 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
                return null;
         }
 
-        public async Task<bool> UpdateCarAsync(Car carToUpdate)
+        public async Task<bool> UpdateAsync(Car carToUpdate)
         {
             _unitOfWork.Cars.Update(carToUpdate);
             var updated = await _unitOfWork.CommitAsync();
             return updated > 0;
         }
-        public async Task<bool> DeleteCarAsync(Car carToDelete)
+        public async Task<bool> DeleteAsync(Car carToDelete)
         {
             _unitOfWork.Cars.Delete(carToDelete);
             var deleted = await _unitOfWork.CommitAsync();
