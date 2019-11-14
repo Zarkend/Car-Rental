@@ -17,13 +17,14 @@ using TestCompany.CarRental.WebAPI.ApiRequests;
 namespace TestCompany.CarRental.Controllers
 {
     [ApiController]
-    public class ReturnController : ControllerBase
+    [Route("api/v1/[controller]")]
+    public class ReturnsController : ControllerBase
     {
 
-        private readonly ILogger<CarsController> _logger;
+        private readonly ILogger<ReturnsController> _logger;
         private readonly IReturnService _returnService;
 
-        public ReturnController(ILogger<CarsController> logger, IReturnService returnService)
+        public ReturnsController(ILogger<ReturnsController> logger, IReturnService returnService)
         {
             _logger = logger;
             _returnService = returnService;
@@ -34,7 +35,7 @@ namespace TestCompany.CarRental.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("")]
-        public async Task<ActionResult> ReturnCarsAsync(IEnumerable<int> carIds)
+        public async Task<IActionResult> ReturnCarsAsync(IEnumerable<int> carIds)
         {
 
             if (!carIds.Any())

@@ -12,6 +12,6 @@ namespace TestCompany.CarRental.Domain.ServiceContracts
 {
     public interface IRentalService
     {
-        Task<RentCarResponse> ProcessRentalRequestAsync(RentRequest request);
+        Task<RentRequestResponse> CreateRentAsync(RentRequest request);
     }
 }

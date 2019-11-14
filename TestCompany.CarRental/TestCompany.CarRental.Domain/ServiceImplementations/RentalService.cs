@@ -25,9 +25,9 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<RentCarResponse> ProcessRentalRequestAsync(RentRequest request)
+        public async Task<RentRequestResponse> CreateRentAsync(RentRequest request)
         {
-            RentCarResponse response = new RentCarResponse();
+            RentRequestResponse response = new RentRequestResponse();
 
             IEnumerable<Car> cars = await _fleetService.GetAsync(x => request.CarIds.Contains(x.Id));
             IEnumerable<Car> alreadyRentedCars = cars.Where(x => x.Rented);
@@ -35,7 +35,7 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
 
             if(request.Company == null)
             {
-                response.Status = RentCarResponseStatus.Failed.ToString();
+                response.Status = RentCarResponseStatus.Failed;
                 response.Message = $"Company with Id {request.CompanyId} does not exists.";
                 return response;
             }
@@ -46,7 +46,7 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
                     request.Status = RentCarResponseStatus.Failed;
                     request.StatusMessage = $"Some of the cars are already rented. {Environment.NewLine} {string.Join(',', alreadyRentedCars.Select(x => x.Id + Environment.NewLine))}";
 
-                    response.Status = RentCarResponseStatus.Failed.ToString();
+                    response.Status = RentCarResponseStatus.Failed;
                     response.Message = $"Cars provided cannot be rented. The following cars are already rented, remove them from the request: {Environment.NewLine} {string.Join(Environment.NewLine, alreadyRentedCars.Select(x => x.Id + Environment.NewLine))}";
                 }
                 else if (cars.Any())
@@ -57,7 +57,7 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
                 {
                     request.Status = RentCarResponseStatus.Failed;
                     request.StatusMessage = $"0 carIds provided.";
-                    response.Status = RentCarResponseStatus.Failed.ToString();
+                    response.Status = RentCarResponseStatus.Failed;
                     response.Message = $"Please provide atleast one(1) carId in the rentalRequest.";
                 }
             }
@@ -65,7 +65,7 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
             {
                 request.Status = RentCarResponseStatus.Failed;
                 request.StatusMessage = $"Some error ocurred while processing the rental request.Rollback executed {Environment.NewLine}{ex.ToString()}";
-                response.Status = RentCarResponseStatus.Failed.ToString();
+                response.Status = RentCarResponseStatus.Failed;
                 response.Message = $"Some error ocurred while processing the rental request {ex.Message}";
                 await _unitOfWork.RentalRequests.InsertAsync(request);
                 _unitOfWork.Rollback();
@@ -78,9 +78,9 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
             return response;
         }
 
-        private RentCarResponse RentCars(IEnumerable<Car> cars, RentRequest request)
+        private RentRequestResponse RentCars(IEnumerable<Car> cars, RentRequest request)
         {
-            RentCarResponse response = new RentCarResponse();
+            RentRequestResponse response = new RentRequestResponse();
 
             foreach (Car car in cars)
             {
@@ -88,15 +88,15 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
 
                 request.Company.BonusPoints += car.BonusPointsPerRental;
                 
-                response.CarResults.Add(new RentCarResult()
+                response.CarResults.Add(new RentCarResponse()
                 {
-                    Status = RentCarStatus.Succeded.ToString(),
+                    Status = RentCarStatus.Succeded,
                     Message = $"CarId {car.Id} rented successfully by companyId {request.CompanyId}.",
                     RentPrice = car.PricePerDay * request.Days
                 });
             }
 
-            response.Status = RentCarResponseStatus.Succeded.ToString();
+            response.Status = RentCarResponseStatus.Succeded;
             request.Status = RentCarResponseStatus.Succeded;
             request.StatusMessage = "Rental request Succeded!";
             request.Company.UpdatedDate = DateTime.Now;

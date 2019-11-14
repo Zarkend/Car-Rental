@@ -18,25 +18,14 @@ namespace TestCompany.CarRental.WebAPI.Contracts.v1.Requests
             public const string Create = "";
         }
 
-        public static class Companies
-        {
-            public const string Update = "/companies/{companyId}";
-
-            public const string Delete = "/companies/{companyId}";
-
-            public const string Get = "/companies/{companyId}";
-
-            public const string Create = "/companies";
-        }
-
         public static class Rents
         {
-            public const string Create = "/rents";
+            public const string Create = "";
         }
 
         public static class Returns
         {
-            public const string Create = "/rents";
+            public const string Create = "";
         }
     }
 }

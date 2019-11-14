@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
@@ -23,6 +25,7 @@ using TestCompany.CarRental.Domain.UnitOfWork;
 using TestCompany.CarRental.Infrastructure.DbContexts;
 using TestCompany.CarRental.Infrastructure.Repositories;
 using TestCompany.CarRental.Infrastructure.UnitOfWork;
+using TestCompany.CarRental.WebAPI.Services;
 
 namespace TestCompany.CarRental
 {
@@ -62,6 +65,16 @@ namespace TestCompany.CarRental
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            services.AddSingleton<IUriService>(provider =>
+            {
+                var accessor = provider.GetRequiredService<IHttpContextAccessor>();
+                var request = accessor.HttpContext.Request;
+                var absoluteUri = string.Concat(request.Scheme, "://", request.Host.ToUriComponent(), "/");
+                return new UriService(absoluteUri);
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -90,6 +103,8 @@ namespace TestCompany.CarRental
             {
                 endpoints.MapControllers();
             });
+
+
         }
     }
 }

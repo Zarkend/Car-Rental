@@ -94,5 +94,10 @@ namespace TestCompany.CarRental.Infrastructure.Repositories
         {
             throw new NotImplementedException();
         }
+
+        public TEntity Entry(TEntity entry)
+        {
+           return context.Entry(entry).Entity;
+        }
     }
 }

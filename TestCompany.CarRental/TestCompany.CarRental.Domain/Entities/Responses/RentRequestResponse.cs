@@ -5,10 +5,10 @@ using TestCompany.CarRental.Domain.Enums;
 
 namespace TestCompany.CarRental.Domain.Entities.Responses
 {
-    public class RentCarResponse
+    public class RentRequestResponse
     {
-        public RentCarStatus Status { get; set; }
+        public RentCarResponseStatus Status { get; set; }
         public string Message { get; set; }
-        public int RentPrice { get; set; }
+        public List<RentCarResponse> CarResults { get; set; } = new List<RentCarResponse>();
     }
 }

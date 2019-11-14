@@ -21,6 +21,7 @@ namespace TestCompany.CarRental.Domain.InfrastructureContracts
             params object[] parameters);
         Task InsertAsync(TEntity entity);
         void Update(TEntity entityToUpdate);
+        TEntity Entry(TEntity entry);
 
     }
 }

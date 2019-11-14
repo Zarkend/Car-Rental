@@ -9,8 +9,10 @@ using TestCompany.CarRental.Domain.Entities;
 using TestCompany.CarRental.Domain.Enums;
 using TestCompany.CarRental.Domain.Requests;
 using TestCompany.CarRental.Domain.ServiceContracts;
+using TestCompany.CarRental.WebAPI.ApiRequests;
 using TestCompany.CarRental.WebAPI.Contracts.v1.Requests;
 using TestCompany.CarRental.WebAPI.Contracts.v1.Responses;
+using TestCompany.CarRental.WebAPI.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,12 +25,14 @@ namespace TestCompany.CarRental.Controllers
         private readonly ILogger<CarsController> _logger;
         private readonly IFleetService _fleetService;
         private readonly IMapper _mapper;
+        private readonly IUriService _uriService;
 
-        public CarsController(ILogger<CarsController> logger, IFleetService fleetService, IMapper mapper)
+        public CarsController(ILogger<CarsController> logger, IFleetService fleetService, IMapper mapper, IUriService uriService)
         {
             _logger = logger;
             _fleetService = fleetService;
             _mapper = mapper;
+            _uriService = uriService;
         }
 
         [HttpGet(ApiRoutes.Cars.Get)]
@@ -43,7 +47,29 @@ namespace TestCompany.CarRental.Controllers
                 return NotFound($"There is no car with Id {carId}. Please try with another carId");
             }
 
-            return Ok(car);
+            return Ok(new Response<CarResponse>(_mapper.Map<CarResponse>(car)));
+        }
+
+        [HttpPost(ApiRoutes.Cars.Create)]
+        public async Task<IActionResult> CreateAsync([FromBody] CreateCarRequest request)
+        {
+            if (request.Brand == Brand.Undefined)
+                return BadRequest(new BadRequestObjectResult($"Undefined brand. Select a valid brand."));
+
+            if (request.Type == CarType.Undefined)
+                return BadRequest(new BadRequestObjectResult($"Undefined type. Select a valid type."));
+
+            if(string.IsNullOrEmpty(request.Registration) || request.Registration.Length != 10)
+                return BadRequest(new BadRequestObjectResult($"Registration must have 10 characters."));
+
+            Car createdCar = await _fleetService.CreateCarAsync(_mapper.Map<Car>(request));
+
+            if (createdCar == null)
+                return NotFound(new NotFoundObjectResult($"Car was not created."));
+
+            var locationUri = _uriService.GetCarUri(Request.Path.Value.Substring(1) + "/" + createdCar.Id.ToString());
+
+            return Created(locationUri, new Response<CarResponse>(_mapper.Map<CarResponse>(createdCar)));
         }
 
         [HttpPut(ApiRoutes.Cars.Update)]
@@ -93,7 +119,7 @@ namespace TestCompany.CarRental.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet(ApiRoutes.Cars.GetAll)]
-        public async Task<ActionResult<IEnumerable<Car>>> GetCarAsync([FromQuery]int? id, [FromQuery] string? registration, [FromQuery] CarType carType, [FromQuery] Brand brand, [FromQuery] bool? rented)
+        public async Task<ActionResult<IEnumerable<Car>>> GetAsync([FromQuery]int? id, [FromQuery] string? registration, [FromQuery] CarType carType, [FromQuery] Brand brand, [FromQuery] bool? rented)
         {
             IEnumerable<Car> cars = await _fleetService.GetAsync();
 
@@ -116,7 +142,7 @@ namespace TestCompany.CarRental.Controllers
                 return NotFound(new NotFoundObjectResult($"There is no cars wich matches all the parameters passed. Please try again."));
             }
 
-            return Ok(cars);
+            return Ok(new Response<List<CarResponse>>(_mapper.Map<List<CarResponse>>(cars)));
         }
 
     }

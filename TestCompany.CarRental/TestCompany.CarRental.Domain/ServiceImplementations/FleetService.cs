@@ -27,6 +27,16 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
         {
             return await _unitOfWork.Cars.GetAsync(filter);
         }
+        public async Task<Car> CreateCarAsync(Car carToCreate)
+        {
+            await _unitOfWork.Cars.InsertAsync(carToCreate);
+            var created = await _unitOfWork.CommitAsync();
+
+            if (created > 0)
+                return _unitOfWork.Cars.Entry(carToCreate);
+            else
+               return null;
+        }
 
         public async Task<bool> UpdateCarAsync(Car carToUpdate)
         {

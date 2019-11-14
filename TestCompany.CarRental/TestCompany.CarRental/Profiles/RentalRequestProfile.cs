@@ -13,6 +13,10 @@ namespace TestCompany.CarRental.WebAPI.Profiles
         public RentalRequestProfile()
         {
             CreateMap<ApiRequests.RentRequest, Domain.Requests.RentRequest>();
+            CreateMap<Domain.Entities.Responses.RentRequestResponse, Contracts.v1.Responses.RentRequestResponse>()
+                .ForMember(dest => dest.Status, opts => opts.MapFrom(src => src.Status.ToString()));
+            CreateMap<Domain.Entities.Responses.RentCarResponse, Contracts.v1.Responses.RentCarResponse>()
+                .ForMember(dest => dest.Status, opts => opts.MapFrom(src => src.Status.ToString()));
         }
     }
 }
