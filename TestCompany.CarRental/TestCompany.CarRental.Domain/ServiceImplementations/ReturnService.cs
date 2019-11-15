@@ -16,12 +16,10 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
 {
     public class ReturnService : IReturnService
     {
-        private ICarService _fleetService;
         private IUnitOfWork _unitOfWork;
 
-        public ReturnService(ICarService fleetService, IUnitOfWork unitOfWork)
+        public ReturnService(IUnitOfWork unitOfWork)
         {
-            _fleetService = fleetService;
             _unitOfWork = unitOfWork;
         }                      
 
@@ -30,19 +28,21 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
             ReturnCarResponse response = new ReturnCarResponse();
             List<Car> cars = await _unitOfWork.Cars.GetAsync(x => carIds.Contains(x.Id));
 
-            foreach (var carId in carIds)
+            foreach (Car car in cars)
             {
-                Car car = cars.FirstOrDefault(x=> x.Id == carId);
-
                 if(car == null)
                 {
-                    ReturnCarResponseMarkAsNotFound(response,carId);
+                    response.Status = ReturnCarResponseStatus.Failed.ToString();
+                    response.Message = $"Something went wrong, check {nameof(response.CarResults)} for more info.";
+                    ReturnCarResponseMarkAsNotFound(response, car.Id);
                     _unitOfWork.Rollback();
                     return response;
                 }
 
                 if (!car.Rented) {
-                    ReturnCarResponseMarkAsNotRented(response, carId);
+                    response.Status = ReturnCarResponseStatus.Failed.ToString();
+                    response.Message = $"Something went wrong, check {nameof(response.CarResults)} for more info.";
+                    ReturnCarResponseMarkAsNotRented(response, car.Id);
                     _unitOfWork.Rollback();
                     return response;
                 }
@@ -55,7 +55,7 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
                 {
                     response.CarResults.Add(new ReturnCarResult()
                     {
-                        Message = $"Car with Id {carId} returned correctly without extra cost.",
+                        Message = $"Car with Id {car.Id} returned correctly without extra cost.",
                         Status = ReturnCarStatus.Succeded.ToString()
                     });
                 }
@@ -82,8 +82,6 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
 
         private void ReturnCarResponseMarkAsNotFound(ReturnCarResponse response, int carId)
         {
-            response.Status = ReturnCarResponseStatus.Failed.ToString();
-            response.Message = $"Something went wrong, check {nameof(response.CarResults)} for more info.";
             response.CarResults.Add(new ReturnCarResult()
             {
                 Message = $"Car with Id {carId} does not exist. Return request will fail.",
@@ -92,8 +90,6 @@ namespace TestCompany.CarRental.Domain.ServiceImplementations
         }
         private void ReturnCarResponseMarkAsNotRented(ReturnCarResponse response, int carId)
         {
-            response.Status = ReturnCarResponseStatus.Failed.ToString();
-            response.Message = $"Something went wrong, check {nameof(response.CarResults)} for more info.";
             response.CarResults.Add(new ReturnCarResult()
             {
                 Message = $"Car with Id {carId} is not rented. Return request will fail.",
