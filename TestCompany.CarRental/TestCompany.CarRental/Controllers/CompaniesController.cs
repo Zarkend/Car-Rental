@@ -52,7 +52,7 @@ namespace TestCompany.CompanyRental.Controllers
         public async Task<IActionResult> CreateAsync([FromBody] CreateCompanyRequest request)
         {
             if(string.IsNullOrEmpty(request.Name) || request.Name.Length < 5)
-                return BadRequest(new BadRequestObjectResult($"Registration must have atleast 5 characters."));
+                return BadRequest(new BadRequestObjectResult($"Name must have atleast 5 characters."));
 
             Company createdCompany = await _companyService.CreateAsync(_mapper.Map<Company>(request));
 

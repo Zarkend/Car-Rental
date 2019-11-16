@@ -10,19 +10,20 @@ namespace TestCompany.CarRental.Infrastructure.DbContexts
 {
     public class CarRentalContext : DbContext
     {
-        public IConfiguration Configuration { get; }
         public DbSet<Car> Car { get; set; }
         public DbSet<Company> Company { get; set; }
         public DbSet<RentRequest> RentRequest { get; set; }
 
-        public CarRentalContext(IConfiguration configuration)
+        public CarRentalContext(DbContextOptions<CarRentalContext> options) :base(options)
         {
-            Configuration = configuration;
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder options) => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
         }
     }

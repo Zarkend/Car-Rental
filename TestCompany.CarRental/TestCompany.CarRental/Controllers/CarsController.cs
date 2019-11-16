@@ -137,11 +137,6 @@ namespace TestCompany.CarRental.Controllers
             if(rented.HasValue)
                 cars = cars.Where(x => x.Rented == rented);
 
-            if (!cars.Any())
-            {
-                return NotFound(new NotFoundObjectResult($"There is no cars wich matches all the parameters passed. Please try again."));
-            }
-
             return Ok(new Response<List<CarResponse>>(_mapper.Map<List<CarResponse>>(cars)));
         }
 

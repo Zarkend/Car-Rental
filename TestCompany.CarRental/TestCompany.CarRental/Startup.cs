@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -32,16 +33,30 @@ namespace TestCompany.CarRental
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment currentEnvironment)
         {
             Configuration = configuration;
+            CurrentEnvironment = currentEnvironment;
         }
 
         public IConfiguration Configuration { get; }
+        public IWebHostEnvironment CurrentEnvironment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            //if (CurrentEnvironment.IsEnvironment("Testing"))
+            //{
+                services.AddDbContext<CarRentalContext>(options =>
+                    options.UseInMemoryDatabase("TestingDB"));
+            //}
+            //else
+            //{
+            //    services.AddDbContext<CarRentalContext>(options =>
+            //        options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            //}
+
             services.AddControllers();
 
             services.AddSwaggerGen(c =>
@@ -62,10 +77,9 @@ namespace TestCompany.CarRental
             services.AddTransient<ICompanyService, CompanyService>();
             services.AddTransient<IReturnService, ReturnService>();
 
-            services.AddScoped<CarRentalContext>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddAutoMapper(typeof(Startup));
 
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
