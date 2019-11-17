@@ -130,7 +130,17 @@ And thats it, you already finished the flow of Renting and Returning a Car! Now 
 
 
 
-## Endpoints
+## Car Endpoints
+
+| Endpoint | Method  | Description | Parameter Type | Payload |
+| ------ | ------ |------ |------ |------ |
+| https://localhost:44352/api/v1/Cars/{carId} | GET | Returns a car with Id carId | Query | NO
+| https://localhost:44352/api/v1/Cars/{carId} | PUT | Update a car with Id carId | Query | { "name":"string"}
+| https://localhost:44352/api/v1/Cars/{carId} | DELETE | Delete a car with Id carId | Query | NO 
+| https://localhost:44352/api/v1/Cars | POST | Create a car with the specified parameters | - | { "name":"string"}
+| https://localhost:44352/api/v1/Cars | GET | Returns a list of cars of matching parameters | Query | NO
+
+## Company Endpoints
 
 | Endpoint | Method  | Description | Parameter Type | Payload |
 | ------ | ------ |------ |------ |------ |
@@ -139,8 +149,19 @@ And thats it, you already finished the flow of Renting and Returning a Car! Now 
 | https://localhost:44352/api/v1/Companies/{companyId} | DELETE | Delete a company with Id companyId | Query | NO 
 | https://localhost:44352/api/v1/Companies | POST | Create a company with the specified name | - | { "name":"string"}
 | https://localhost:44352/api/v1/Companies | GET | Returns a list of companies of matching parameters | Query | NO
-| https://localhost:44352/api/v1/Cars/{carId} | GET | Returns a car with Id carId | Query | NO
-| https://localhost:44352/api/v1/Cars/{carId} | PUT | Update a car with Id carId | Query | { "name":"string"}
-| https://localhost:44352/api/v1/Cars/{carId} | DELETE | Delete a car with Id carId | Query | NO 
-| https://localhost:44352/api/v1/Cars | POST | Create a car with the specified parameters | - | { "name":"string"}
-| https://localhost:44352/api/v1/Cars | GET | Returns a list of cars of matching parameters | Query | NO
+
+## Rental Endpoints
+
+| Endpoint | Method  | Description | Parameter Type | Payload |
+| ------ | ------ |------ |------ |------ |
+| https://localhost:44352/api/v1/Rentals | POST | Try to rent a car | - | [ { "carIds": [ 0 ], "companyId": 0, "days": 0 } ]
+
+
+
+## Return Endpoints
+
+| Endpoint | Method  | Description | Parameter Type | Payload |
+| ------ | ------ |------ |------ |------ |
+| https://localhost:44352/api/v1/Returns | GET | Try to return a list of cars | Query | { "carIds": [ 0 ] }
+
+
