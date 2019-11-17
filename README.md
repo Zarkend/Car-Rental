@@ -101,7 +101,8 @@ Payload (modify the carIds array if you only created one car)
 [
   {
     "carIds": [
-      1,2
+      1,
+      2
     ],
     "companyId": 1,
     "days": 15
@@ -118,9 +119,9 @@ Payload
 ```json
 [
   {
-  "carIds": [
-    1
-   ]
+    "carIds": [
+      1
+    ]
   }
 ]
 ```
