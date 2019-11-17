@@ -10,7 +10,7 @@ using TestCompany.CarRental.WebAPI.Contracts.v1.Requests;
 using TestCompany.CarRental.WebAPI.Contracts.v1.Responses;
 using TestCompany.CarRental.WebAPI.Services;
 using TestCompany.CarRental.Domain.Entities;
-using TestCompany.CarRental.WebAPI.ApiRequests;
+
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -117,11 +117,6 @@ namespace TestCompany.CompanyRental.Controllers
 
             if (!string.IsNullOrEmpty(name))
                 companies = companies.Where(x => x.Name == name);
-
-            if (!companies.Any())
-            {
-                return NotFound(new NotFoundObjectResult($"There is no Companies wich matches all the parameters passed. Please try again."));
-            }
 
             return Ok(new Response<List<CompanyResponse>>(_mapper.Map<List<CompanyResponse>>(companies)));
         }

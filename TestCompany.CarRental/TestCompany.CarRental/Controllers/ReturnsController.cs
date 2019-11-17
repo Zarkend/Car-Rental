@@ -10,7 +10,7 @@ using TestCompany.CarRental.Domain.Entities.Responses;
 using TestCompany.CarRental.Domain.Enums;
 using TestCompany.CarRental.Domain.Requests;
 using TestCompany.CarRental.Domain.ServiceContracts;
-using TestCompany.CarRental.WebAPI.ApiRequests;
+using TestCompany.CarRental.WebAPI.Contracts.v1.Requests;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -35,15 +35,15 @@ namespace TestCompany.CarRental.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("")]
-        public async Task<IActionResult> ReturnCarsAsync(IEnumerable<int> carIds)
+        public async Task<IActionResult> ReturnCarsAsync(ReturnRequest request)
         {
 
-            if (!carIds.Any())
+            if (!request.CarIds.Any())
             {
                 return BadRequest($"Please provide atleast one car to return.");
             }
 
-            ReturnCarResponse response = await _returnService.ReturnCarsAsync(carIds);
+            ReturnCarResponse response = await _returnService.ReturnCarsAsync(request.CarIds);
 
             return Ok(response);
         }

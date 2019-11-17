@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using TestCompany.CarRental.WebAPI.ApiRequests;
 using TestCompany.CarRental.WebAPI.Contracts.v1.Requests;
 using TestCompany.CarRental.WebAPI.Contracts.v1.Responses;
 

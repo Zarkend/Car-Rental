@@ -9,7 +9,6 @@ using TestCompany.CarRental.Domain.Entities;
 using TestCompany.CarRental.Domain.Enums;
 using TestCompany.CarRental.Domain.Requests;
 using TestCompany.CarRental.Domain.ServiceContracts;
-using TestCompany.CarRental.WebAPI.ApiRequests;
 using TestCompany.CarRental.WebAPI.Contracts.v1.Requests;
 using TestCompany.CarRental.WebAPI.Contracts.v1.Responses;
 
@@ -38,7 +37,7 @@ namespace TestCompany.CarRental.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost(ApiRoutes.Rents.Create)]
-        public async Task<IActionResult> CreateAsync([FromBody]IEnumerable<WebAPI.ApiRequests.RentRequest> rentRequests)
+        public async Task<IActionResult> CreateAsync([FromBody]IEnumerable<WebAPI.Contracts.v1.Requests.RentRequest> rentRequests)
         {
             List<RentRequestResponse> responses = new List<RentRequestResponse>();
             if (!rentRequests.Any())
@@ -46,7 +45,7 @@ namespace TestCompany.CarRental.Controllers
                 return BadRequest(new BadRequestObjectResult($"Please provide atleast one RentalRequest."));
             }
 
-            foreach(WebAPI.ApiRequests.RentRequest request in rentRequests)
+            foreach(WebAPI.Contracts.v1.Requests.RentRequest request in rentRequests)
             {
                 RentRequestResponse response = _mapper.Map<RentRequestResponse>(await _rentalService.CreateRentAsync(_mapper.Map<Domain.Requests.RentRequest>(request)));
                 responses.Add(response);

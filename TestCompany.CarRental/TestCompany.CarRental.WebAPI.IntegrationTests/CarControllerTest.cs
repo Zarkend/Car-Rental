@@ -16,7 +16,6 @@ using TestCompany.CarRental.Infrastructure.DbContexts;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
-using TestCompany.CarRental.WebAPI.ApiRequests;
 
 namespace TestCompany.CarRental.WebAPI.IntegrationTests
 {

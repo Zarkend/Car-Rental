@@ -9,7 +9,6 @@ using TestCompany.CarRental.Domain.Entities;
 using TestCompany.CarRental.Domain.Enums;
 using TestCompany.CarRental.Domain.Requests;
 using TestCompany.CarRental.Domain.ServiceContracts;
-using TestCompany.CarRental.WebAPI.ApiRequests;
 using TestCompany.CarRental.WebAPI.Contracts.v1.Requests;
 using TestCompany.CarRental.WebAPI.Contracts.v1.Responses;
 using TestCompany.CarRental.WebAPI.Services;
