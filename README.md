@@ -29,6 +29,10 @@ API will start at https://localhost:5001/
 
 All the endpoints listed on the readme will be with https://localhost:44352/.
 
+### Swagger
+
+Note that this api comes with Swagger installed, browse https://localhost:44352/index.html to look at all the endpoints.
+
 ### Tutorial
 
 This tutorial gives a brief example of use:
@@ -129,8 +133,13 @@ And thats it, you already finished the flow of Renting and Returning a Car! Now 
 
 | Endpoint | Method  | Description | Parameter Type | Payload |
 | ------ | ------ |------ |------ |------ |
-| https://localhost:44352/api/v1/Companies/{companyId} | GET | Returns a company with Id companyId. | Query | NO
+| https://localhost:44352/api/v1/Companies/{companyId} | GET | Returns a company with Id companyId | Query | NO
 | https://localhost:44352/api/v1/Companies/{companyId} | PUT | Update a company with Id companyId | Query | { "name":"string"}
-| https://localhost:44352/api/v1/Companies/{companyId} | DELETE | | Query 
-| https://localhost:44352/api/v1/Companies | POST | | Body
-| https://localhost:44352/api/v1/Companies | GET | | Body
+| https://localhost:44352/api/v1/Companies/{companyId} | DELETE | Delete a company with Id companyId | Query | NO 
+| https://localhost:44352/api/v1/Companies | POST | Create a company with the specified name | - | { "name":"string"}
+| https://localhost:44352/api/v1/Companies | GET | Returns a list of companies of matching parameters | Query | NO
+| https://localhost:44352/api/v1/Cars/{carId} | GET | Returns a car with Id carId | Query | NO
+| https://localhost:44352/api/v1/Cars/{carId} | PUT | Update a car with Id carId | Query | { "name":"string"}
+| https://localhost:44352/api/v1/Cars/{carId} | DELETE | Delete a car with Id carId | Query | NO 
+| https://localhost:44352/api/v1/Cars | POST | Create a car with the specified parameters | - | { "name":"string"}
+| https://localhost:44352/api/v1/Cars | GET | Returns a list of cars of matching parameters | Query | NO
