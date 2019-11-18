@@ -29,7 +29,7 @@ API will start at https://localhost:5001/
 
 ### Command line
 
-Open the CMD, go to the web api project folder (Car-Rental\TestCompany.CarRental) and use the following command
+Open the CMD, go to the web api project folder (Car-Rental/TestCompany.CarRental/TestCompany.CarRental) and use the following command
 
         dotnet run
 
