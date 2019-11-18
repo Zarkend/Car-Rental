@@ -21,13 +21,17 @@ If not installed, install .Net Core 3.0 [SDK](https://dotnet.microsoft.com/downl
 
 * Open the solution with Visual Studio 2019 or Visual Studio Code
 
-### Visual Studio 2019
+## Execute the API
+
+Choose one of the following:
+
+#### Visual Studio 2019
 API will start at https://localhost:44352/    
 
-### Visual Studio Code
+#### Visual Studio Code
 API will start at https://localhost:5001/    
 
-### Command line
+#### Command line
 
 Open the CMD, go to the web api project folder (Car-Rental/TestCompany.CarRental/TestCompany.CarRental) and use the following command
 
@@ -35,7 +39,7 @@ Open the CMD, go to the web api project folder (Car-Rental/TestCompany.CarRental
 
 Api will start at https://localhost:5001/
 
-### Swagger
+## Swagger
 
 Note that this api comes with Swagger installed, browse itto look at all the endpoints.
 
