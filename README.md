@@ -27,13 +27,20 @@ API will start at https://localhost:44352/
 ### Visual Studio Code
 API will start at https://localhost:5001/    
 
-All the endpoints listed on the readme will be with https://localhost:44352/.
+### Command line
+
+Open the CMD, go to the web api project folder (Car-Rental\TestCompany.CarRental) and use the following command
+
+        dotnet run
+
+Api will start at https://localhost:5001/
 
 ### Swagger
 
 Note that this api comes with Swagger installed, browse https://localhost:44352/index.html to look at all the endpoints.
 
 ### Tutorial
+All the endpoints listed on the tutorial will be with https://localhost:44352/. Change the port if you are using another program.
 
 This tutorial gives a brief example of use:
 
