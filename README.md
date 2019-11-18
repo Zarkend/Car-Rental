@@ -38,9 +38,13 @@ Api will start at https://localhost:5001/
 ### Swagger
 
 Note that this api comes with Swagger installed, browse itto look at all the endpoints.
-      Visual Studio
+
+
+Visual Studio
        https://localhost:44352/index.html
-      CMD or VSCode
+       
+
+CMD or VSCode
        https://localhost:5001/index.html
 
 ### Tutorial
